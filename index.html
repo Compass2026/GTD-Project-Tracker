@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Compass GTD</title>
+
+    <!-- PWA / installability meta -->
+    <meta name="theme-color" content="#9333ea" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Compass" />
+    <link rel="icon" type="image/svg+xml" href="/compass-icon.svg" />
+    <link rel="apple-touch-icon" href="/compass-icon.svg" />
+    <!-- Apply dark class synchronously before any render to prevent flash of light mode -->
+    <script>
+      (function() {
+        var stored = localStorage.getItem('compass-dark-mode');
+        // Default to dark if no preference stored yet
+        var dark = stored !== null ? stored === 'true' : true;
+        if (dark) document.documentElement.classList.add('dark');
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
