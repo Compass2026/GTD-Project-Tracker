@@ -174,6 +174,82 @@ export default function App() {
     fetchProjects();
   }, []);
 
+  // ── Supabase Realtime: live-sync gtd_projects across tabs/sessions ────────
+  useEffect(() => {
+    console.log('[Realtime] Subscribing to gtd_projects channel...');
+
+    const channel = supabase
+      .channel('gtd_projects_changes')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'gtd_projects' },
+        (payload) => {
+          console.log('[Realtime] INSERT event:', payload.new);
+          const incoming = dbRowToProject(payload.new as Record<string, unknown>);
+          setProjects((prev) => {
+            // Deduplication: if this tab already added the project optimistically,
+            // the same stableId will already exist — skip the insert.
+            const alreadyExists = prev.some((p) => p.id === incoming.id);
+            if (alreadyExists) {
+              console.log('[Realtime] INSERT skipped (already in state):', incoming.project_name);
+              return prev;
+            }
+            console.log('[Realtime] INSERT applied:', incoming.project_name);
+            return [incoming, ...prev];
+          });
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'gtd_projects' },
+        (payload) => {
+          console.log('[Realtime] UPDATE event:', payload.new);
+          const updated = dbRowToProject(payload.new as Record<string, unknown>);
+          setProjects((prev) =>
+            prev.map((p) => (p.id === updated.id ? updated : p))
+          );
+          // If the updated project is open in the modal, refresh it too
+          setSelectedProject((current) => {
+            if (current && current.id === updated.id) {
+              console.log('[Realtime] UPDATE applied to open modal:', updated.project_name);
+              return updated;
+            }
+            return current;
+          });
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'gtd_projects' },
+        (payload) => {
+          console.log('[Realtime] DELETE event:', payload.old);
+          const deletedName = (payload.old as Record<string, unknown>)['Project Name'] as string;
+          const deletedId = stableId(deletedName);
+          setProjects((prev) => {
+            const next = prev.filter((p) => p.id !== deletedId);
+            console.log('[Realtime] DELETE applied:', deletedName);
+            return next;
+          });
+          // Close the edit modal if the open project was deleted remotely
+          setSelectedProject((current) => {
+            if (current && current.id === deletedId) {
+              console.log('[Realtime] DELETE closed modal for:', deletedName);
+              return null;
+            }
+            return current;
+          });
+        }
+      )
+      .subscribe((status) => {
+        console.log('[Realtime] Channel status:', status);
+      });
+
+    return () => {
+      console.log('[Realtime] Cleaning up gtd_projects channel');
+      supabase.removeChannel(channel);
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // ── Complete project ─────────────────────────────────────────────────────
   const completeProject = useCallback(async (id: string) => {
     const target = projects.find(p => p.id === id);
