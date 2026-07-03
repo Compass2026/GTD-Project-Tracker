@@ -144,3 +144,61 @@ export function formatMinutes(totalMinutes: number): string {
   }
 }
 
+/**
+ * Generates an iCalendar (.ics) string for a list of projects.
+ */
+export function generateICS(projects: any[]): string {
+  const formatICSDate = (dateStr?: string) => {
+    if (!dateStr) return '';
+    // Remove non-numeric characters for ICS format: YYYYMMDDTHHMMSSZ
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return '';
+    return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  };
+
+  let ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Compass GTD//Project Tracker//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH'
+  ];
+
+  projects.forEach((p) => {
+    if (!p.due_date) return;
+    
+    const startDate = formatICSDate(p.due_date);
+    if (!startDate) return;
+
+    // End date is 30 mins after start for visualization
+    const end = new Date(p.due_date);
+    end.setMinutes(end.getMinutes() + 30);
+    const endDate = formatICSDate(end.toISOString());
+
+    ics.push('BEGIN:VEVENT');
+    ics.push(`UID:${p.id}@compass-gtd`);
+    ics.push(`DTSTAMP:${formatICSDate(new Date().toISOString())}`);
+    ics.push(`DTSTART:${startDate}`);
+    ics.push(`DTEND:${endDate}`);
+    ics.push(`SUMMARY:Deadline: ${p.project_name}`);
+    ics.push(`DESCRIPTION:Department: ${p.department}\\nStatus: ${p.status}\\nNotes: ${p.notes || 'No notes'}`);
+    if (p.support_link) {
+      ics.push(`URL:${p.support_link}`);
+    }
+    ics.push('BEGIN:VALARM');
+    ics.push('ACTION:DISPLAY');
+    ics.push('DESCRIPTION:Reminder: 1 hour before');
+    ics.push('TRIGGER:-PT1H'); // 1 hour before
+    ics.push('END:VALARM');
+    ics.push('BEGIN:VALARM');
+    ics.push('ACTION:DISPLAY');
+    ics.push('DESCRIPTION:Deadline Reached');
+    ics.push('TRIGGER:PT0S'); // Exactly at the time
+    ics.push('END:VALARM');
+    ics.push('END:VEVENT');
+  });
+
+  ics.push('END:VCALENDAR');
+  return ics.join('\r\n');
+}
+

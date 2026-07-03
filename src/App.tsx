@@ -19,7 +19,10 @@ import {
   Moon,
   Clock,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Bell,
+  Calendar,
+  Download
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -52,7 +55,8 @@ import {
   DEPARTMENT_HIERARCHY,
 } from './types';
 import { supabase } from './supabaseClient';
-import { getDepartmentStyle, getDepartmentDotColor, formatDueDate, parseTimeBlockToMinutes, formatMinutes } from './utils';
+import { getDepartmentStyle, getDepartmentDotColor, formatDueDate, parseTimeBlockToMinutes, formatMinutes, generateICS } from './utils';
+import { useNotifications } from './hooks/useNotifications';
 import { marked } from 'marked';
 
 // ── helpers: map between DB (CSV column keys) and internal Project shape ──────
@@ -148,6 +152,20 @@ export default function App() {
   const [activeProject, setActiveProject] = useState<Project | null>(null);
   // Track which parent groups are expanded in the sidebar (Compass open by default)
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set(['Compass']));
+
+  const { requestPermission, permissionStatus } = useNotifications(projects);
+
+  const handleExportICS = () => {
+    const icsContent = generateICS(projects.filter(p => p.status !== 'Completed'));
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'compass-deadlines.ics');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -621,7 +639,34 @@ export default function App() {
               </div>
             </nav>
 
-            <div className="p-4 border-t border-slate-200 dark:border-slate-800">
+            <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
+              <div className="flex flex-col gap-2">
+                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest px-1">
+                  Sync & Notifications
+                </p>
+                <div className="space-y-1">
+                  <button
+                    onClick={requestPermission}
+                    disabled={permissionStatus === 'granted'}
+                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                      permissionStatus === 'granted'
+                        ? 'text-emerald-500 bg-emerald-500/10'
+                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                    }`}
+                  >
+                    <Bell size={14} className={permissionStatus === 'granted' ? 'fill-current' : ''} />
+                    <span>{permissionStatus === 'granted' ? 'Notifications Active' : 'Enable Notifications'}</span>
+                  </button>
+                  <button
+                    onClick={handleExportICS}
+                    className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all"
+                  >
+                    <Calendar size={14} />
+                    <span>Sync to Apple/Mac Calendar</span>
+                  </button>
+                </div>
+              </div>
+
               <div className="flex items-center justify-between p-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl">
                 <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Appearance</span>
                 <button
