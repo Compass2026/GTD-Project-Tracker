@@ -32,12 +32,12 @@ export function useNotifications(projects: Project[]) {
           notifiedUpcomingRefs.current.add(project.id);
         }
 
-        // 2. Reached alert (exactly now or within last minute)
-        if (timeUntil <= 0 && timeUntil > -60000 && !notifiedReachedRefs.current.has(project.id)) {
+        // 2. Reached alert (at deadline or overdue)
+        if (timeUntil <= 0 && !notifiedReachedRefs.current.has(project.id)) {
           new Notification('Deadline Reached!', {
-            body: `The deadline for "${project.project_name}" is NOW.`,
+            body: `The deadline for "${project.project_name}" has passed.`,
             icon: '/compass-icon.svg',
-            requireInteraction: true // Keep it on screen until user clicks
+            requireInteraction: true 
           });
           notifiedReachedRefs.current.add(project.id);
         }

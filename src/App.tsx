@@ -57,6 +57,7 @@ import {
 import { supabase } from './supabaseClient';
 import { getDepartmentStyle, getDepartmentDotColor, formatDueDate, parseTimeBlockToMinutes, formatMinutes, generateICS } from './utils';
 import { useNotifications } from './hooks/useNotifications';
+import { useCalendarSync } from './hooks/useCalendarSync';
 import { marked } from 'marked';
 
 // ── helpers: map between DB (CSV column keys) and internal Project shape ──────
@@ -154,6 +155,19 @@ export default function App() {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set(['Compass']));
 
   const { requestPermission, permissionStatus } = useNotifications(projects);
+  const { syncCalendar, getCalendarUrl, isSyncing } = useCalendarSync();
+
+  // ── Automatic Calendar Sync ───────────────────────────────────────────────
+  // Sync to storage whenever projects change (debounced to avoid spamming)
+  useEffect(() => {
+    if (projects.length === 0) return;
+    
+    const timer = setTimeout(() => {
+      syncCalendar(projects);
+    }, 2000); // 2 second debounce
+
+    return () => clearTimeout(timer);
+  }, [projects, syncCalendar]);
 
   const handleExportICS = () => {
     const icsContent = generateICS(projects.filter(p => p.status !== 'Completed'));
@@ -658,11 +672,17 @@ export default function App() {
                     <span>{permissionStatus === 'granted' ? 'Notifications Active' : 'Enable Notifications'}</span>
                   </button>
                   <button
-                    onClick={handleExportICS}
+                    onClick={() => {
+                      const url = getCalendarUrl();
+                      navigator.clipboard.writeText(url);
+                      window.alert('Calendar Feed Link copied to clipboard!\n\nTo subscribe on Mac/iPhone:\n1. Open Calendar App\n2. File > New Calendar Subscription\n3. Paste this link');
+                      // Also try to open it directly
+                      window.open(url, '_blank');
+                    }}
                     className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all"
                   >
-                    <Calendar size={14} />
-                    <span>Sync to Apple/Mac Calendar</span>
+                    <Calendar size={14} className={isSyncing ? 'animate-pulse' : ''} />
+                    <span>{isSyncing ? 'Syncing...' : 'Sync to Apple/Mac Calendar'}</span>
                   </button>
                 </div>
               </div>
