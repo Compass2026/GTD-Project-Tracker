@@ -121,10 +121,25 @@ function saveCardOrder(order: Record<string, number>) {
 /** Apply a saved order map to a project array, preserving relative DB order for unknowns. */
 function applyCardOrder(projects: Project[], order: Record<string, number>): Project[] {
   return [...projects].sort((a, b) => {
+    // 1. Sort by due date (ascending, projects with dates first)
+    const dateA = a.due_date?.trim();
+    const dateB = b.due_date?.trim();
+
+    if (dateA && dateB) {
+      if (dateA < dateB) return -1;
+      if (dateA > dateB) return 1;
+    } else if (dateA) {
+      return -1;
+    } else if (dateB) {
+      return 1;
+    }
+
+    // 2. Secondary sort: saved manual order
     const oa = order[a.id] ?? Infinity;
     const ob = order[b.id] ?? Infinity;
     if (oa !== ob) return oa - ob;
-    return 0; // preserve original order for ties / unsaved projects
+
+    return 0; // preserve relative order for remaining
   });
 }
 
