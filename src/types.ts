@@ -77,6 +77,26 @@ export type ProjectStatus = 'Active' | 'Waiting' | 'Follow Up' | 'Completed';
 
 export type TimeBlock = '5 min' | '15 min' | '30 min' | '1 hour' | '2 hours';
 
+/** Who is responsible for a task — the AI-workforce delegation designations. */
+export type Owner = 'TOM' | 'CLAUDE' | 'CLAUDE+APPROVAL' | 'DELEGATED' | 'WAITING';
+
+export const OWNER_OPTIONS: Owner[] = [
+  'TOM',
+  'CLAUDE',
+  'CLAUDE+APPROVAL',
+  'DELEGATED',
+  'WAITING',
+];
+
+/** Badge colors for the Owner pill shown on cards. */
+export const OWNER_COLORS: Record<string, string> = {
+  'TOM': 'bg-slate-500/10 text-slate-500 dark:text-slate-400 border border-slate-500/20',
+  'CLAUDE': 'bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/20',
+  'CLAUDE+APPROVAL': 'bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400 border border-fuchsia-500/20',
+  'DELEGATED': 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20',
+  'WAITING': 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20',
+};
+
 export interface Project {
   id: string;
   department: Department | string;
@@ -84,6 +104,7 @@ export interface Project {
   project_name: string;
   status: ProjectStatus;
   time_block: TimeBlock;
+  owner?: Owner | string;
   due_date?: string;
   current_next_action?: string;
   notes?: string;

@@ -53,6 +53,9 @@ import {
   Department,
   STATIC_DEPARTMENTS,
   DEPARTMENT_HIERARCHY,
+  type Owner,
+  OWNER_OPTIONS,
+  OWNER_COLORS,
 } from './types';
 import { supabase } from './supabaseClient';
 import { getDepartmentStyle, getDepartmentDotColor, formatDueDate, parseTimeBlockToMinutes, formatMinutes, generateICS } from './utils';
@@ -75,6 +78,7 @@ function dbRowToProject(row: Record<string, unknown>): Project {
     project_name: name,
     status: (row['Status'] as ProjectStatus) ?? 'Active',
     time_block: (row['Time Block'] as TimeBlock) ?? '15 min',
+    owner: (row['Owner'] as string) ?? 'TOM',
     due_date: (row['Due Date'] as string) ?? undefined,
     current_next_action: (row['Current Next Action'] as string) ?? undefined,
     notes: (row['Notes'] as string) ?? undefined,
@@ -89,6 +93,7 @@ function projectToDbRow(p: Omit<Project, 'id'>): Record<string, unknown> {
     'Project Name': p.project_name,
     'Status': p.status,
     'Time Block': p.time_block,
+    'Owner': p.owner ?? 'TOM',
     'Due Date': p.due_date ?? null,
     'Current Next Action': p.current_next_action ?? null,
     'Notes': p.notes ?? null,
@@ -840,6 +845,7 @@ export default function App() {
                         daily_focus: f,
                         status: 'Active',
                         time_block: '15 min',
+                        owner: 'TOM',
                         current_next_action: '',
                         notes: ''
                       });
@@ -1171,6 +1177,11 @@ function ProjectCard({
         )}
 
         <div className="flex items-center justify-between gap-2 flex-wrap">
+          {/* Owner pill — who is responsible for this task */}
+          <div className={`px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wide w-fit ${OWNER_COLORS[project.owner ?? 'TOM'] ?? OWNER_COLORS['TOM']}`}>
+            {project.owner ?? 'TOM'}
+          </div>
+
           {dueDateStatus !== 'none' && (
             <div className={`flex items-center gap-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded w-fit ${
               dueDateStatus === 'overdue'
@@ -1496,13 +1507,23 @@ function ProjectModal({ project, onClose, onSave, onDelete, departments }: Proje
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-1">
               <label className="text-[10px] uppercase font-bold text-zinc-400 dark:text-zinc-500 block tracking-widest">Due Date</label>
-              <input 
+              <input
                 type="datetime-local"
                 value={edited.due_date || ''}
                 onChange={e => setEdited({...edited, due_date: e.target.value})}
                 placeholder="No date set"
                 className="w-full bg-transparent dark:bg-slate-700 border-none dark:border dark:border-slate-600 rounded px-1 py-1 text-xs font-semibold text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-400 focus:ring-0"
               />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] uppercase font-bold text-zinc-400 dark:text-zinc-500 block tracking-widest">Owner</label>
+              <select
+                value={edited.owner ?? 'TOM'}
+                onChange={e => setEdited({...edited, owner: e.target.value as Owner})}
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 text-xs font-semibold text-slate-900 dark:text-white focus:ring-1 focus:ring-purple-500 focus:outline-none"
+              >
+                {OWNER_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+              </select>
             </div>
           </div>
 
@@ -1598,6 +1619,7 @@ function CreateProjectModal({ onClose, onSave, departments }: {
     daily_focus: 'Today',
     status: 'Active',
     time_block: '15 min',
+    owner: 'TOM',
     current_next_action: '',
     notes: '',
     due_date: '',
@@ -1721,7 +1743,7 @@ function CreateProjectModal({ onClose, onSave, departments }: {
             </div>
           </div>
 
-          {/* Row: Due Date (half-width left) */}
+          {/* Row: Due Date | Owner */}
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-1">
               <label className="text-[10px] uppercase font-bold text-zinc-400 dark:text-zinc-500 block tracking-widest">Due Date</label>
@@ -1731,6 +1753,16 @@ function CreateProjectModal({ onClose, onSave, departments }: {
                 onChange={e => setForm({...form, due_date: e.target.value})}
                 className="w-full bg-zinc-50 dark:bg-slate-700 border border-zinc-200 dark:border-slate-600 rounded-lg p-3 text-xs font-semibold text-zinc-900 dark:text-white outline-none focus:border-indigo-500 transition-colors"
               />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] uppercase font-bold text-zinc-400 dark:text-zinc-500 block tracking-widest">Owner</label>
+              <select
+                value={form.owner ?? 'TOM'}
+                onChange={e => setForm({...form, owner: e.target.value as Owner})}
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-3 text-xs font-semibold appearance-none text-slate-900 dark:text-white focus:ring-1 focus:ring-purple-500 focus:outline-none"
+              >
+                {OWNER_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+              </select>
             </div>
           </div>
 
