@@ -83,9 +83,12 @@ have to file documents himself.
 
 ## Handling inbound email
 
-An hourly **email sweep** Routine spins up a fresh session to catch replies
-on threads Claude is running for Tom; the 8:00 AM and 5:30 PM check-ins run
-the same sweep as a backstop. Sweep procedure:
+An hourly **email sweep** Routine fires into the persistent **Chief of
+Staff session** (session_015vinkkWp6y78tjmCtcWq87) — NOT a fresh session:
+in this org, trigger-spawned fresh sessions get no connector tools
+(verified 2026-08-30), so any Routine that needs Gmail/Supabase must bind
+to a long-lived session that has them. The 8:00 AM and 5:30 PM check-ins
+run the same sweep as a backstop. Sweep procedure:
 
 1. Query the board for non-Completed rows where `"Owner"` is `CLAUDE` or
    `CLAUDE+APPROVAL` (plus `WAITING` rows whose Notes reference an email
@@ -109,6 +112,24 @@ the same sweep as a backstop. Sweep procedure:
    thread, stop and escalate to Tom.
 6. Quiet runs stay quiet: nothing new means no message to Tom and no board
    churn.
+
+## Session continuity (mobile ↔ desktop)
+
+Sessions cannot read each other's conversations. Two rules keep the system
+coherent anyway:
+
+1. **One home base.** The persistent "AI Chief of Staff" session
+   (session_015vinkkWp6y78tjmCtcWq87) is where check-ins and the email
+   sweep land. It is a cloud session, so Tom can open it from the mobile
+   app or desktop and continue the same conversation on either device —
+   for Chief of Staff conversations, prefer continuing that session over
+   starting a new one.
+2. **Write everything down.** Any session (mobile intake, one-off task,
+   audit) that does significant work MUST leave the paper trail as it
+   goes: card fields updated, a dated one-line summary in the card's
+   Notes, deliverables in Drive with the link on the card. The board,
+   Gmail, Drive, and this repo are the shared memory; a conversation that
+   didn't write things down effectively never happened.
 
 ## Daily rhythm
 
