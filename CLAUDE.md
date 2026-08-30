@@ -113,11 +113,18 @@ the same sweep as a backstop. Sweep procedure:
 
 - **8:00 AM check-in** — run the inbound email sweep (see above), then
   review Today/Tomorrow columns, surface due and overdue items, confirm
-  the day's priorities, list what Claude will execute today.
+  the day's priorities, and list what Claude will execute today. Also
+  cover: today's Google Calendar events with prep needed, important
+  unread Gmail from the last 24h, birthdays in the next 3 days and
+  overdue monthly contacts (`public.birthdays`, `public.monthly_contacts`),
+  and a one-line routine-tracker status (`public.daily_routines`,
+  `public.routine_logs`, streak in `public.profiles`).
 - **5:30 PM check-in** — run the inbound email sweep, review what got
   done, mark completions (`"Status" = 'Completed'`), roll unfinished
   items forward deliberately (not silently), surface any drafts awaiting
-  Tom's approval, and capture anything new from the day.
+  Tom's approval, show tomorrow's shape (Tomorrow column + calendar),
+  note which routines went unlogged, and capture anything new from the
+  day.
 
 Tom's times are US Central (America/Chicago).
 
