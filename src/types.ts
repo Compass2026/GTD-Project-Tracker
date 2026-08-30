@@ -111,6 +111,8 @@ export interface Project {
   support_link?: string;
   drive_link?: string;
   last_reviewed?: string;
+  /** ISO timestamp stamped when the project is marked Completed; drives archive sort. */
+  completed_at?: string;
 }
 
 export const FOCUS_ORDER: DailyFocus[] = [

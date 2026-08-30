@@ -33,6 +33,7 @@ Column names contain spaces and MUST be double-quoted in SQL.
 | `"Daily Focus"` | text | `Today`, `Tomorrow`, `This Week`, `Next Week`, `This Quarter`, `Waiting` |
 | `"Project Name"` | text | Short, action-oriented title |
 | `"Status"` | text | `Active`, `Waiting`, `Follow Up`, `Completed` |
+| `"Completed At"` | timestamptz | Set to `now()` when marking `Completed`; clear if un-completing. Drives archive sort. |
 | `"Time Block"` | text | `5 min`, `15 min`, `30 min`, `1 hour`, `2 hours` |
 | `"Due Date"` | text | `YYYY-MM-DDTHH:MM` (e.g. `2026-09-04T17:00`), or NULL |
 | `"Current Next Action"` | text | Concrete, verb-first next action(s); numbered list for multi-step |
@@ -149,3 +150,10 @@ Tom's times are US Central (America/Chicago).
    workload, priorities, or what's due — don't answer from memory.
 4. Claude never deletes rows without explicit confirmation naming the
    project(s).
+5. Status semantics — apply consistently: an email sent / work delivered
+   while a reply or result is still pending is NOT done. Set
+   `"Status" = 'Follow Up'` and `"Daily Focus" = 'Waiting'`, and note what
+   we're waiting on in Notes. Only when nothing is pending is it
+   `"Status" = 'Completed'` — and always set `"Completed At" = now()` at
+   that moment (clear it if a project is re-opened). Completed cards live
+   in the board's archive, sorted newest first.
