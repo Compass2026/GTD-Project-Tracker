@@ -83,6 +83,7 @@ function dbRowToProject(row: Record<string, unknown>): Project {
     current_next_action: (row['Current Next Action'] as string) ?? undefined,
     notes: (row['Notes'] as string) ?? undefined,
     support_link: (row['Support Link'] as string) ?? undefined,
+    completed_at: (row['Completed At'] as string) ?? undefined,
   };
 }
 
@@ -306,11 +307,12 @@ export default function App() {
   const completeProject = useCallback(async (id: string) => {
     const target = projects.find(p => p.id === id);
     if (!target) return;
+    const completedAt = new Date().toISOString();
     // Optimistic update
-    setProjects(prev => prev.map(p => p.id === id ? { ...p, status: 'Completed' } : p));
+    setProjects(prev => prev.map(p => p.id === id ? { ...p, status: 'Completed', completed_at: completedAt } : p));
     const { error } = await supabase
       .from('gtd_projects')
-      .update({ 'Status': 'Completed' })
+      .update({ 'Status': 'Completed', 'Completed At': completedAt })
       .eq('Project Name', target.project_name);
     if (error) {
       console.error('Failed to complete project:', error);
@@ -355,7 +357,13 @@ export default function App() {
         p.department.toLowerCase().includes(q)
       );
     }
-    return result;
+    // Newest completions first; legacy rows without a timestamp sink to the bottom.
+    return [...result].sort((a, b) => {
+      if (!a.completed_at && !b.completed_at) return 0;
+      if (!a.completed_at) return 1;
+      if (!b.completed_at) return -1;
+      return b.completed_at.localeCompare(a.completed_at);
+    });
   }, [projects, filterDepts, searchQuery]);
 
   // Unique departments: always show the static list, plus any extra depts from DB not already in it
@@ -500,9 +508,19 @@ export default function App() {
       console.warn('updateProject: could not find original project for id', updatedProject.id);
       return;
     }
+    const row = projectToDbRow(updatedProject);
+    // Stamp/clear the completion timestamp only on an actual status transition,
+    // so ordinary edits never clobber an existing "Completed At".
+    if (updatedProject.status === 'Completed' && original.status !== 'Completed') {
+      updatedProject = { ...updatedProject, completed_at: new Date().toISOString() };
+      row['Completed At'] = updatedProject.completed_at;
+    } else if (updatedProject.status !== 'Completed' && original.status === 'Completed') {
+      updatedProject = { ...updatedProject, completed_at: undefined };
+      row['Completed At'] = null;
+    }
     const { error } = await supabase
       .from('gtd_projects')
-      .update(projectToDbRow(updatedProject))
+      .update(row)
       .eq('Project Name', original.project_name);
     if (error) {
       console.error('Error updating project:', error);
@@ -1353,6 +1371,7 @@ function ArchiveView({ projects }: { projects: Project[] }) {
             <th className="px-6 py-4 text-[10px] font-bold text-purple-500 uppercase tracking-widest">Focus</th>
             <th className="px-6 py-4 text-[10px] font-bold text-purple-500 uppercase tracking-widest">Time Block</th>
             <th className="px-6 py-4 text-[10px] font-bold text-purple-500 uppercase tracking-widest">Last Action</th>
+            <th className="px-6 py-4 text-[10px] font-bold text-purple-500 uppercase tracking-widest">Completed</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/50">
@@ -1389,6 +1408,13 @@ function ArchiveView({ projects }: { projects: Project[] }) {
                     <p className="text-[11px] text-zinc-400 dark:text-zinc-500 truncate max-w-xs italic">
                       {project.current_next_action || '—'}
                     </p>
+                  </td>
+                  <td className="px-6 py-3">
+                    <span className="text-xs font-medium text-zinc-400 dark:text-zinc-500 whitespace-nowrap">
+                      {project.completed_at
+                        ? new Date(project.completed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                        : '—'}
+                    </span>
                   </td>
                 </tr>
               ))}
