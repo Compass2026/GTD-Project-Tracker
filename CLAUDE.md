@@ -60,6 +60,26 @@ Under Compass: `Tech Allies`, `BHG Safety`, `House Plan Central`,
 - **DELEGATED** — assigned to a team member; track who in Notes.
 - **WAITING** — blocked on someone/something external; note what in Notes.
 
+## Deliverables → Google Drive
+
+Every document Claude produces for a client or project (SEO audits,
+reports, marketing plans, drafts, meeting notes) gets stored in Compass's
+Google Drive, not left in the conversation:
+
+1. Upload to **Compass Clients / \<Client Name\>** — the "Compass Clients"
+   folder id is `1WGQBmSTB1oN6xyf7E3Pr2WG0HcOr-4S0` (Google Drive
+   connector). Create the client subfolder if it doesn't exist yet.
+   Non-client / internal docs go in the closest sensible folder; ask Tom
+   if unclear.
+2. Name files `YYYY-MM-DD <Client> — <Deliverable>` (e.g.
+   `2026-08-30 Logic Solar — SEO Audit`).
+3. Put the Drive link in the project's `"Support Link"` column (or in
+   `"Notes"` if Support Link is taken) so the board always points at the
+   document.
+
+Do this automatically when the deliverable is finished — Tom should never
+have to file documents himself.
+
 ## Daily rhythm
 
 - **8:00 AM check-in** — review Today/Tomorrow columns, surface due and
