@@ -104,6 +104,10 @@ Tom's times are US Central (America/Chicago).
    next action. "Website stuff" is not a next action; "Call Carter to
    confirm June 12 10:30am meeting" is.
 2. Confirm a summary with Tom before inserting or bulk-updating rows.
+   When capturing new projects, fill every field (Department, Daily Focus,
+   Status, Time Block, Due Date, Owner, Current Next Action) from Tom's own
+   answers — ask about each blank rather than silently defaulting; see
+   `/new-project` for the interview flow.
 3. Read the board (via Supabase) before answering questions about
    workload, priorities, or what's due — don't answer from memory.
 4. Claude never deletes rows without explicit confirmation naming the

@@ -15,28 +15,35 @@ it has the schema, departments, and owner designations.
 1. **Listen.** Take whatever Tom gives you — a sentence, a voice-note brain
    dump, a forwarded email. Extract what you can before asking anything.
 
-2. **Interview for the gaps.** Ask only about what's genuinely missing or
-   ambiguous. Batch questions (AskUserQuestion with up to 4 questions works
-   well on mobile). You need, in priority order:
+2. **Interview for every blank.** Tom's standing rule (2026-08-30): every
+   field must come from Tom or be something you already genuinely know from
+   what he said — never a silent default. If a field below is missing or
+   ambiguous after step 1, ask about it, even when that feels tedious.
+   Batch the questions (AskUserQuestion with up to 4 questions works well
+   on mobile; two rounds is fine if there are more blanks than that).
+   Propose your best guess as the first option so Tom can one-tap it, but
+   the answer is his:
    - **Project Name** — short and action-oriented. Propose one; let Tom veto.
    - **Department** — never guess between plausible options; ask.
    - **Current Next Action** — the single concrete, physical, verb-first
      next step. If Tom gives a vague outcome ("get the website fixed"),
      ask what the very first action is ("Who do you call/email first?").
      Multi-step plans go in as a numbered list.
-   - **Owner** — who is responsible: TOM, CLAUDE, CLAUDE+APPROVAL,
-     DELEGATED (ask who → Notes), or WAITING (ask on what → Notes).
-   - **Timeline** — Due Date (if there's a real deadline) and Daily Focus
-     column (Today / Tomorrow / This Week / Next Week / This Quarter /
-     Waiting). If no hard deadline, leave Due Date NULL and just pick the
-     focus column.
-   - **Time Block** — 5 min / 15 min / 30 min / 1 hour / 2 hours. Estimate
-     it yourself from the next action; only ask if truly unclear.
+   - **Owner** — TOM, CLAUDE, CLAUDE+APPROVAL, DELEGATED (ask who → Notes),
+     or WAITING (ask on what → Notes).
+   - **Daily Focus** — Today / Tomorrow / This Week / Next Week /
+     This Quarter / Waiting.
+   - **Due Date** — ask whether there's a real deadline; only NULL when Tom
+     says there isn't one.
+   - **Status** — usually `Active` for new work; confirm when it might be
+     `Waiting` or `Follow Up`.
+   - **Time Block** — 5 min / 15 min / 30 min / 1 hour / 2 hours.
    - **Notes / Support Link** — optional; capture context Tom already gave
      (names, phone numbers, URLs, background) rather than asking for more.
 
-   Don't over-interview: 1–2 rounds of questions max. Sensible defaults:
-   Status `Active`, Owner `TOM`, Time Block `15 min`.
+   "Already genuinely know" means Tom's words settle it (he said "I'll call
+   him tomorrow" → Owner TOM, Daily Focus Tomorrow) — not a plausible
+   guess. When in doubt, it goes in the question batch.
 
 3. **Confirm.** Show a compact summary card (name, department, next action,
    owner, focus/due date) and get a yes before writing.
