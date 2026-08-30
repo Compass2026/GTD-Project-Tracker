@@ -21,6 +21,14 @@ described below.
 - **Realtime**: the board subscribes to Postgres changes on `gtd_projects`,
   so a row inserted or updated by Claude (via the Supabase connector)
   appears on Tom's screen live, no refresh needed.
+- **Auto-promotion**: a `pg_cron` job in the database
+  (`gtd-promote-due-cards`, daily 06:00 UTC, function
+  `public.gtd_promote_due_cards()`) moves non-Completed cards from
+  Tomorrow / This Week / Next Week / This Quarter into **Today** on the
+  day their `"Due Date"` arrives (Central time). It deliberately skips
+  Waiting cards and already-past-due legacy cards — those are the
+  check-ins' job to surface for a human decision. Sessions don't need to
+  do this manually; trust the job.
 
 ## `gtd_projects` schema
 
