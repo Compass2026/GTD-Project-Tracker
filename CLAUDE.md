@@ -91,12 +91,18 @@ have to file documents himself.
 
 ## Handling inbound email
 
-An hourly **email sweep** Routine fires into the persistent **Chief of
-Staff session** (session_015vinkkWp6y78tjmCtcWq87) — NOT a fresh session:
-in this org, trigger-spawned fresh sessions get no connector tools
-(verified 2026-08-30), so any Routine that needs Gmail/Supabase must bind
-to a long-lived session that has them. The 8:00 AM and 5:30 PM check-ins
-run the same sweep as a backstop. Sweep procedure:
+The **email sweep** runs twice a day, as the first step of the 8:00 AM and
+5:30 PM check-ins. There is deliberately **no hourly sweep Routine**: one
+ran 2026-08-30/31 and was retired at Tom's request — 24 runs a day cost
+real usage and were almost entirely quiet. Don't recreate it; if a thread
+genuinely needs faster turnaround, Tom asks for a one-off check.
+
+Any Routine that needs Gmail/Supabase must fire into the persistent
+**Chief of Staff session** (session_015vinkkWp6y78tjmCtcWq87), never a
+fresh session: in this org, trigger-spawned fresh sessions get no
+connector tools (verified 2026-08-30). Also create Routines fresh rather
+than editing an existing one — edited triggers have gone stale and stopped
+firing (2026-08-30/31). Sweep procedure:
 
 1. Query the board for non-Completed rows where `"Owner"` is `CLAUDE` or
    `CLAUDE+APPROVAL` (plus `WAITING` rows whose Notes reference an email
