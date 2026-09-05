@@ -144,6 +144,14 @@ coherent anyway:
    Notes, deliverables in Drive with the link on the card. The board,
    Gmail, Drive, and this repo are the shared memory; a conversation that
    didn't write things down effectively never happened.
+3. **Sessions in other repos can't see this file.** A session opened in a
+   client repo (Logic-Solar, lucas_construction, …) has no idea the board
+   is in Supabase — it will go hunting and find the archived
+   "Master Projects GTD" spreadsheet in Drive instead (that sheet is a
+   Feb–Apr 2026 export and is not the board). `.claude/BOARD_POINTER.md`
+   is a paste-ready block that tells any session where the board is and
+   how to write to it; drop it into each client repo's `CLAUDE.md`, or
+   paste it as a message when a session goes looking.
 
 ## Daily rhythm
 
