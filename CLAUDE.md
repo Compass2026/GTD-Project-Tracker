@@ -178,6 +178,18 @@ Tom's times are US Central (America/Chicago).
   interview Tom until the project has a clear next action, timeline, and
   owner, then insert it onto the board. Use it whenever Tom describes new
   work, even if he doesn't invoke it by name.
+- `gtd-board` (`plugins/compass-gtd/skills/gtd-board/`) — the same
+  knowledge packaged for **sessions in other repos**. This repo is also a
+  plugin marketplace (`.claude-plugin/marketplace.json`, plugin
+  `compass-gtd`). Two ways to reach the board from Logic-Solar,
+  lucas_construction, etc.:
+  1. Enable the `gtd-board` skill on Tom's claude.ai account (desktop
+     app → Customize → Skills). Cloud and mobile sessions in every repo
+     load account skills at start. This is the preferred route.
+  2. Per repo: copy `templates/client-repo-settings.json` to that repo's
+     `.claude/settings.json`; cloud sessions install `compass-gtd@compass`
+     at session start.
+  When editing the intake rules, update both skills.
 
 ## Working rules
 
