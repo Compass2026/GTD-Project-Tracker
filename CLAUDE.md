@@ -126,6 +126,14 @@ firing (2026-08-30/31). Sweep procedure:
    thread, stop and escalate to Tom.
 6. Quiet runs stay quiet: nothing new means no message to Tom and no board
    churn.
+7. **Flagged mail.** Tom reads this mailbox in Outlook. An Outlook flag
+   syncs to Gmail as a star, so `is:starred` is his flag list. Every
+   check-in reports the currently starred threads in a FLAGGED section
+   (sender, subject, date, and whether a board card covers it). A flag is
+   a signal to Tom, not an instruction to Claude: don't reply to or file a
+   flagged thread unless its card's Owner already says so, or Tom asks.
+   Nothing starred means the section says so in one line. (Requested
+   2026-09-23.)
 
 ## Session continuity (mobile ↔ desktop)
 
@@ -161,14 +169,15 @@ coherent anyway:
   cover: today's Google Calendar events with prep needed, important
   unread Gmail from the last 24h, birthdays in the next 3 days and
   overdue monthly contacts (`public.birthdays`, `public.monthly_contacts`),
-  and a one-line routine-tracker status (`public.daily_routines`,
+  a FLAGGED section listing starred (Outlook-flagged) threads, and a
+  one-line routine-tracker status (`public.daily_routines`,
   `public.routine_logs`, streak in `public.profiles`).
 - **5:30 PM check-in** — run the inbound email sweep, review what got
   done, mark completions (`"Status" = 'Completed'`), roll unfinished
   items forward deliberately (not silently), surface any drafts awaiting
-  Tom's approval, show tomorrow's shape (Tomorrow column + calendar),
-  note which routines went unlogged, and capture anything new from the
-  day.
+  Tom's approval, list starred (Outlook-flagged) threads in a FLAGGED
+  section, show tomorrow's shape (Tomorrow column + calendar), note
+  which routines went unlogged, and capture anything new from the day.
 
 Tom's times are US Central (America/Chicago).
 
