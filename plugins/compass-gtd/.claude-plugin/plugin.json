@@ -1,0 +1,7 @@
+{
+  "name": "compass-gtd",
+  "description": "Tom's GTD project board: where it lives, its schema, and how to add, update, and read cards from any session.",
+  "version": "1.0.0",
+  "author": { "name": "Tom Dombrowski", "email": "thomas@compassmarketing.ai" },
+  "repository": "https://github.com/Compass2026/GTD-Project-Tracker"
+}

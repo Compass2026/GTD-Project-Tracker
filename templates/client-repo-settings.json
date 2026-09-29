@@ -1,0 +1,10 @@
+{
+  "extraKnownMarketplaces": {
+    "compass": {
+      "source": { "source": "github", "repo": "Compass2026/GTD-Project-Tracker" }
+    }
+  },
+  "enabledPlugins": {
+    "compass-gtd@compass": true
+  }
+}

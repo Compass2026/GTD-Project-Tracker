@@ -1,0 +1,12 @@
+{
+  "name": "compass",
+  "owner": { "name": "Tom Dombrowski", "email": "thomas@compassmarketing.ai" },
+  "plugins": [
+    {
+      "name": "compass-gtd",
+      "source": "./plugins/compass-gtd",
+      "description": "Read and write Tom's GTD project board (Supabase gtd_projects) from any repo or session.",
+      "version": "1.0.0"
+    }
+  ]
+}

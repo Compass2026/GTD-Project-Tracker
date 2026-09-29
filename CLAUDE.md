@@ -126,6 +126,14 @@ firing (2026-08-30/31). Sweep procedure:
    thread, stop and escalate to Tom.
 6. Quiet runs stay quiet: nothing new means no message to Tom and no board
    churn.
+7. **Flagged mail.** Tom reads this mailbox in Outlook. An Outlook flag
+   syncs to Gmail as a star, so `is:starred` is his flag list. Every
+   check-in reports the currently starred threads in a FLAGGED section
+   (sender, subject, date, and whether a board card covers it). A flag is
+   a signal to Tom, not an instruction to Claude: don't reply to or file a
+   flagged thread unless its card's Owner already says so, or Tom asks.
+   Nothing starred means the section says so in one line. (Requested
+   2026-09-23.)
 
 ## Session continuity (mobile ↔ desktop)
 
@@ -144,6 +152,14 @@ coherent anyway:
    Notes, deliverables in Drive with the link on the card. The board,
    Gmail, Drive, and this repo are the shared memory; a conversation that
    didn't write things down effectively never happened.
+3. **Sessions in other repos can't see this file.** A session opened in a
+   client repo (Logic-Solar, lucas_construction, …) has no idea the board
+   is in Supabase — it will go hunting and find the archived
+   "Master Projects GTD" spreadsheet in Drive instead (that sheet is a
+   Feb–Apr 2026 export and is not the board). `.claude/BOARD_POINTER.md`
+   is a paste-ready block that tells any session where the board is and
+   how to write to it; drop it into each client repo's `CLAUDE.md`, or
+   paste it as a message when a session goes looking.
 
 ## Daily rhythm
 
@@ -153,14 +169,15 @@ coherent anyway:
   cover: today's Google Calendar events with prep needed, important
   unread Gmail from the last 24h, birthdays in the next 3 days and
   overdue monthly contacts (`public.birthdays`, `public.monthly_contacts`),
-  and a one-line routine-tracker status (`public.daily_routines`,
+  a FLAGGED section listing starred (Outlook-flagged) threads, and a
+  one-line routine-tracker status (`public.daily_routines`,
   `public.routine_logs`, streak in `public.profiles`).
 - **5:30 PM check-in** — run the inbound email sweep, review what got
   done, mark completions (`"Status" = 'Completed'`), roll unfinished
   items forward deliberately (not silently), surface any drafts awaiting
-  Tom's approval, show tomorrow's shape (Tomorrow column + calendar),
-  note which routines went unlogged, and capture anything new from the
-  day.
+  Tom's approval, list starred (Outlook-flagged) threads in a FLAGGED
+  section, show tomorrow's shape (Tomorrow column + calendar), note
+  which routines went unlogged, and capture anything new from the day.
 
 Tom's times are US Central (America/Chicago).
 
@@ -170,6 +187,18 @@ Tom's times are US Central (America/Chicago).
   interview Tom until the project has a clear next action, timeline, and
   owner, then insert it onto the board. Use it whenever Tom describes new
   work, even if he doesn't invoke it by name.
+- `gtd-board` (`plugins/compass-gtd/skills/gtd-board/`) — the same
+  knowledge packaged for **sessions in other repos**. This repo is also a
+  plugin marketplace (`.claude-plugin/marketplace.json`, plugin
+  `compass-gtd`). Two ways to reach the board from Logic-Solar,
+  lucas_construction, etc.:
+  1. Enable the `gtd-board` skill on Tom's claude.ai account (desktop
+     app → Customize → Skills). Cloud and mobile sessions in every repo
+     load account skills at start. This is the preferred route.
+  2. Per repo: copy `templates/client-repo-settings.json` to that repo's
+     `.claude/settings.json`; cloud sessions install `compass-gtd@compass`
+     at session start.
+  When editing the intake rules, update both skills.
 
 ## Working rules
 
