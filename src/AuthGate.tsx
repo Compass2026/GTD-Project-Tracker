@@ -59,7 +59,8 @@ export default function AuthGate({ children }: { children: ReactNode }) {
             </div>
             <h1 className="text-lg font-semibold text-white">Compass GTD</h1>
           </div>
-          <p className="text-sm text-gray-400 mb-6">Sign in to see your board.</p>
+          <p className="text-sm text-gray-400 mb-6">Sign in to the read-only archive.</p>
+          <a href="https://executive.compassmarketing.ai/projects" className="mb-4 block text-sm text-violet-400">Open Executive OS for current work</a>
           <form onSubmit={handleSubmit} className="space-y-4">
             <input
               type="email"
